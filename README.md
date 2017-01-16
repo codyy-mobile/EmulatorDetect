@@ -17,12 +17,40 @@ allprojects {
 **Step 2. Add the dependency**
 ```
 dependencies {
-	        compile 'com.github.CodyyAndroid:EmulatorDetect:v1.0.0'
+	        compile 'com.github.CodyyAndroid:EmulatorDetect:v1.0.1'
 	}
 ```
 ## Usage
 
 模拟器检测器
 ```
-DeviceInfo info = EmulatorDetect.emulatorDetect(Context);
+RxPermissions rxPermissions = new RxPermissions(getSupportFragmentManager());
+        rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE)
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean aBoolean) {
+                        if (aBoolean) {
+                            mEmulatorDetector = new EmulatorDetector().with(MainActivity.this);
+                            mEmulatorDetector
+                                    .setCheckTelephony(true)
+                                    .setDebug(true)
+                                    .detect(new EmulatorDetector.OnEmulatorDetectorListener() {
+                                        @Override
+                                        public void onResult(final boolean isEmulator) {
+                                            place.setVisibility(View.GONE);
+                                            if (isEmulator) {
+                                                textView.setText("This device is emulator" + getCheckInfo());
+                                            } else {
+                                                textView.setText("This device is not emulator" + getCheckInfo());
+                                            }
+                                            /*SendAsyncTask asyncTask = new SendAsyncTask();
+                                            asyncTask.execute("设备信息", getCheckInfo());*///send email
+                                            Log.d(getClass().getName(), "Running on emulator --> " + isEmulator);
+                                        }
+                                    });
+                        } else {
+                            //OpenSettings
+                        }
+                    }
+                });
 ```
