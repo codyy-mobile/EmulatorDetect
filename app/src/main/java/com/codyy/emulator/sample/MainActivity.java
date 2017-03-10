@@ -1,30 +1,59 @@
 package com.codyy.emulator.sample;
 
-import android.Manifest;
+import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.AsyncTask;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.codyy.emulator.detect.library.EmulatorDetector;
-import com.codyy.lib.crash.CrashMail;
-import com.codyy.lib.crash.MailUtils;
-import com.codyy.rx.permissions.RxPermissions;
-
-import rx.functions.Action1;
+import com.codyy.emulator.detect.library.EmulatorDetectorService;
 
 public class MainActivity extends AppCompatActivity {
     TextView place;
     TextView textView;
-    private EmulatorDetector mEmulatorDetector;
+    EmulatorDetectorService mService;
+    boolean mBound = false;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Bind to LocalService
+        Intent intent = new Intent(this, EmulatorDetectorService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+
+    /**
+     * Defines callbacks for service binding, passed to bindService()
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            EmulatorDetectorService.LocalBinder binder = (EmulatorDetectorService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,83 +61,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         place = (TextView) findViewById(R.id.tv_placeholder);
         textView = (TextView) findViewById(R.id.tv_info);
-        RxPermissions rxPermissions = new RxPermissions(getSupportFragmentManager());
-        rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE)
-                .subscribe(new Action1<Boolean>() {
-                    @Override
-                    public void call(Boolean aBoolean) {
-                        if (aBoolean) {
-                            mEmulatorDetector = new EmulatorDetector().with(MainActivity.this);
-                            mEmulatorDetector
-                                    .setCheckTelephony(true)
-                                    .setDebug(true)
-                                    .detect(new EmulatorDetector.OnEmulatorDetectorListener() {
-                                        @Override
-                                        public void onResult(final boolean isEmulator) {
-                                            place.setVisibility(View.GONE);
-                                            if (isEmulator) {
-                                                textView.setText("This device is emulator" + getCheckInfo());
-                                            } else {
-                                                textView.setText("This device is not emulator" + getCheckInfo());
-                                            }
-                                            /*SendAsyncTask asyncTask = new SendAsyncTask();
-                                            asyncTask.execute("设备信息", getCheckInfo());*///send email
-                                            Log.d(getClass().getName(), "Running on emulator --> " + isEmulator);
-                                        }
-                                    });
-                        } else {
-                            tip(MainActivity.this);
-                        }
-                    }
-                });
-    }
-
-    private String getCheckInfo() {
-        return "\nTelephony enable is "
-                + mEmulatorDetector.isCheckTelephony()
-                + "\n\n\n" + EmulatorDetector.getDeviceInfo(MainActivity.this)
-                + "\n\nEmulator Detector version " + BuildConfig.VERSION_NAME;
-    }
-
-    /**
-     * send Email Task
-     */
-    private class SendAsyncTask extends AsyncTask<String, Integer, Boolean> {
-
-        @Override
-        protected Boolean doInBackground(String... params) {
-            try {
-                MailUtils.sendMail(new CrashMail("mail.codyy.cn", params[0], params[1], "android@codyy.com", "运营平台2.2.0", "android", "lijian@codyy.com", "李健"));
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            super.onPostExecute(aBoolean);
-            if (aBoolean) Toast.makeText(MainActivity.this, "发送成功", Toast.LENGTH_SHORT).show();
-            else Toast.makeText(MainActivity.this, "发送失败", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void tip(final Context context) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("提示").setMessage("未授予相关权限,部分功能无法使用");
-        builder.setCancelable(true);
-        builder.setNegativeButton("设置", new DialogInterface.OnClickListener() {
+        textView.postDelayed(new Runnable() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                openSettings(context);
+            public void run() {
+                if (mBound && mService.isEmulator()) {
+                    textView.setText("This device is emulator\n" + mService.getDeviceInfo(MainActivity.this));
+                } else {
+                    textView.setText("This device is not emulator\n" + mService.getDeviceInfo(MainActivity.this));
+                }
             }
-        }).create().show();
+        }, 2000L);
     }
 
-    private static void openSettings(Context context) {
-        Uri packageURI = Uri.parse("package:" + context.getPackageName());
-        Intent intent = new Intent("android.settings.APPLICATION_DETAILS_SETTINGS", packageURI);
-        context.startActivity(intent);
-    }
 }
