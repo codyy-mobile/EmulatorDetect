@@ -154,6 +154,9 @@ public class EmulatorDetectorService extends Service implements SensorEventListe
 
     private String sEmulatorName;
 
+    /**
+     * 获取设备信息
+     */
     public String getDeviceInfo(Context context) {
         final PackageManager packageManager = context.getPackageManager();
         List<ApplicationInfo> packages = packageManager

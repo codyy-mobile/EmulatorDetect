@@ -17,40 +17,86 @@ allprojects {
 **Step 2. Add the dependency**
 ```
 dependencies {
-	        compile 'com.github.CodyyAndroid:EmulatorDetect:v1.0.1'
+	        compile 'com.github.CodyyAndroid:EmulatorDetect:v1.0.2'
 	}
 ```
 ## Usage
 
 模拟器检测器
 ```
-RxPermissions rxPermissions = new RxPermissions(getSupportFragmentManager());
-        rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE)
-                .subscribe(new Action1<Boolean>() {
-                    @Override
-                    public void call(Boolean aBoolean) {
-                        if (aBoolean) {
-                            mEmulatorDetector = new EmulatorDetector().with(MainActivity.this);
-                            mEmulatorDetector
-                                    .setCheckTelephony(true)
-                                    .setDebug(true)
-                                    .detect(new EmulatorDetector.OnEmulatorDetectorListener() {
-                                        @Override
-                                        public void onResult(final boolean isEmulator) {
-                                            place.setVisibility(View.GONE);
-                                            if (isEmulator) {
-                                                textView.setText("This device is emulator" + getCheckInfo());
-                                            } else {
-                                                textView.setText("This device is not emulator" + getCheckInfo());
-                                            }
-                                            /*SendAsyncTask asyncTask = new SendAsyncTask();
-                                            asyncTask.execute("设备信息", getCheckInfo());*///send email
-                                            Log.d(getClass().getName(), "Running on emulator --> " + isEmulator);
-                                        }
-                                    });
-                        } else {
-                            //OpenSettings
-                        }
-                    }
-                });
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
+
+import com.codyy.emulator.detect.library.EmulatorDetectorService;
+
+public class MainActivity extends AppCompatActivity {
+    TextView place;
+    TextView textView;
+    EmulatorDetectorService mService;
+    boolean mBound = false;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Bind to LocalService
+        Intent intent = new Intent(this, EmulatorDetectorService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+
+    /**
+     * Defines callbacks for service binding, passed to bindService()
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            EmulatorDetectorService.LocalBinder binder = (EmulatorDetectorService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        place = (TextView) findViewById(R.id.tv_placeholder);
+        textView = (TextView) findViewById(R.id.tv_info);
+        textView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (mBound && mService.isEmulator()) {
+                    textView.setText("This device is emulator\n" + mService.getDeviceInfo(MainActivity.this));
+                } else {
+                    textView.setText("This device is not emulator\n" + mService.getDeviceInfo(MainActivity.this));
+                }
+            }
+        }, 2000L);
+    }
+
+}
+
 ```
