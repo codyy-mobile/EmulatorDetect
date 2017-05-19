@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                     textView.setText("This device is not emulator\n" + mService.getDeviceInfo(MainActivity.this));
                 }
             }
-        }, 2000L);
+        }, 2500L);
     }
 
 }

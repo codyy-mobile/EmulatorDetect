@@ -28,10 +28,10 @@ public class EmulatorDetectorService extends Service implements SensorEventListe
     private final IBinder mIBinder = new LocalBinder();
     private SensorManager mSensorManager;
     private boolean isEmulator;
-    private boolean isCalc = true;
     private List<Float> mFloatsX = new ArrayList<>();
     private List<Float> mFloatsY = new ArrayList<>();
     private List<Float> mFloatsZ = new ArrayList<>();
+    private long mCurrentTime = System.currentTimeMillis();
 
     @Override
     public void onCreate() {
@@ -44,18 +44,6 @@ public class EmulatorDetectorService extends Service implements SensorEventListe
         }
         //监听磁场传感器
         mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_GAME);
-        startTimer();
-    }
-
-    private void startTimer() {
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                isCalc = false;
-                isEmulator = mFloatsX.size() <= 1 || mFloatsY.size() <= 1 || mFloatsZ.size() <= 1 || isXLinearCorrelation() || isYLinearCorrelation() || isZLinearCorrelation();
-            }
-        }, 1000L);
     }
 
     /**
@@ -125,13 +113,23 @@ public class EmulatorDetectorService extends Service implements SensorEventListe
         mSensorManager.unregisterListener(this);
     }
 
+    /**
+     * 计算方法执行一次
+     */
+    private int mOnece = 0;
+
     @Override
     public void onSensorChanged(SensorEvent event) {
         //如果传感器类型为磁场传感器
-        if (isCalc && event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+        if (System.currentTimeMillis() - mCurrentTime <= 2000 && event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
             mFloatsX.add(event.values[0]);
             mFloatsY.add(event.values[1]);
             mFloatsZ.add(event.values[2]);
+        } else {
+            if (mOnece == 0) {
+                mOnece++;
+                isEmulator = mFloatsX.size() <= 1 || mFloatsY.size() <= 1 || mFloatsZ.size() <= 1 || isXLinearCorrelation() || isYLinearCorrelation() || isZLinearCorrelation();
+            }
         }
     }
 
