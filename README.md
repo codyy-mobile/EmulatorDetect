@@ -100,3 +100,4 @@ public class MainActivity extends AppCompatActivity {
 }
 
 ```
+## [API DOC](https://jitpack.io/com/github/CodyyAndroid/EmulatorDetect/v1.0.6/javadoc/)
