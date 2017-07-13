@@ -17,8 +17,6 @@ import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by lijian on 2017/3/10.
@@ -27,7 +25,7 @@ import java.util.TimerTask;
 public class EmulatorDetectorService extends Service implements SensorEventListener {
     private final IBinder mIBinder = new LocalBinder();
     private SensorManager mSensorManager;
-    private boolean isEmulator;
+    private boolean isEmulator = true;
     private List<Float> mFloatsX = new ArrayList<>();
     private List<Float> mFloatsY = new ArrayList<>();
     private List<Float> mFloatsZ = new ArrayList<>();
