@@ -7,6 +7,8 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.view.View;
 import android.widget.TextView;
 
 import com.codyy.emulator.detect.library.EmulatorDetectorService;
@@ -64,13 +66,14 @@ public class MainActivity extends AppCompatActivity {
         textView.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (mBound && mService.isEmulator()) {
+                place.setVisibility(View.GONE);
+                if (mBound && mService.isEmulator()&& !TextUtils.isEmpty(mService.getEmulatorName(MainActivity.this))) {
                     textView.setText("This device is emulator\n" + mService.getDeviceInfo(MainActivity.this));
                 } else {
                     textView.setText("This device is not emulator\n" + mService.getDeviceInfo(MainActivity.this));
                 }
             }
-        }, 2500L);
+        }, 1000L);
     }
 
 }

@@ -119,7 +119,7 @@ public class EmulatorDetectorService extends Service implements SensorEventListe
     @Override
     public void onSensorChanged(SensorEvent event) {
         //如果传感器类型为磁场传感器
-        if (System.currentTimeMillis() - mCurrentTime <= 2000 && event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+        if (System.currentTimeMillis() - mCurrentTime <= 500 && event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
             mFloatsX.add(event.values[0]);
             mFloatsY.add(event.values[1]);
             mFloatsZ.add(event.values[2]);
@@ -148,28 +148,37 @@ public class EmulatorDetectorService extends Service implements SensorEventListe
         }
     }
 
-    private String sEmulatorName;
-
     /**
      * 获取设备信息
      */
     public String getDeviceInfo(Context context) {
+        return getEmulatorName(context) + "\n" + "Build.PRODUCT: " + Build.PRODUCT + "\n" +
+                "Build.MANUFACTURER: " + Build.MANUFACTURER + "\n" +
+                "Build.BRAND: " + Build.BRAND + "\n" +
+                "Build.DEVICE: " + Build.DEVICE + "\n" +
+                "Build.MODEL: " + Build.MODEL + "\n" +
+                "Build.HARDWARE: " + Build.HARDWARE + "\n" +
+                "Build.FINGERPRINT: " + Build.FINGERPRINT;
+    }
+
+    public String getEmulatorName(Context context) {
+        String sEmulatorName = null;
         final PackageManager packageManager = context.getPackageManager();
         List<ApplicationInfo> packages = packageManager
                 .getInstalledApplications(PackageManager.GET_META_DATA);
         for (ApplicationInfo packageInfo : packages) {
             String packageName = packageInfo.packageName;
-            if (packageName.startsWith("com.vphone") || packageName.startsWith("com.bignox")) {
+            if (packageName.startsWith("com.vphone.") || packageName.startsWith("com.bignox.")) {
                 sEmulatorName = "夜神模拟器";
-            } else if (packageName.startsWith("me.haima")) {
+            } else if (packageName.startsWith("me.haima.")) {
                 sEmulatorName = "海马玩模拟器";
-            } else if (packageName.startsWith("com.bluestacks")) {
+            } else if (packageName.startsWith("com.bluestacks.")) {
                 sEmulatorName = "BlueStacks模拟器";
-            } else if (packageName.startsWith("cn.itools")) {
+            } else if (packageName.startsWith("cn.itools.")) {
                 sEmulatorName = "iTools 模拟器";
-            } else if (packageName.startsWith("com.kop") || packageName.startsWith("com.kaopu")) {
+            } else if (packageName.startsWith("com.kop.") || packageName.startsWith("com.kaopu.")) {
                 sEmulatorName = "天天模拟器";
-            } else if (packageName.startsWith("com.microvirt")) {
+            } else if (packageName.startsWith("com.microvirt.")) {
                 sEmulatorName = "逍遥模拟器";
             } else if (packageName.equals("com.google.android.launcher.layouts.genymotion")) {
                 sEmulatorName = "Genymotion模拟器";
@@ -180,17 +189,11 @@ public class EmulatorDetectorService extends Service implements SensorEventListe
             List<ActivityManager.RunningServiceInfo> serviceInfos = manager.getRunningServices(30);
             for (ActivityManager.RunningServiceInfo serviceInfo : serviceInfos) {
                 String serviceName = serviceInfo.service.getClassName();
-                if (serviceName.startsWith("com.bluestacks")) {
+                if (serviceName.startsWith("com.bluestacks.")) {
                     sEmulatorName = "BlueStacks模拟器";
                 }
             }
         }
-        return (sEmulatorName == null ? "" : sEmulatorName) + "\n" + "Build.PRODUCT: " + Build.PRODUCT + "\n" +
-                "Build.MANUFACTURER: " + Build.MANUFACTURER + "\n" +
-                "Build.BRAND: " + Build.BRAND + "\n" +
-                "Build.DEVICE: " + Build.DEVICE + "\n" +
-                "Build.MODEL: " + Build.MODEL + "\n" +
-                "Build.HARDWARE: " + Build.HARDWARE + "\n" +
-                "Build.FINGERPRINT: " + Build.FINGERPRINT;
+        return sEmulatorName == null ? "" : sEmulatorName;
     }
 }
