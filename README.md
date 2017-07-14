@@ -17,7 +17,7 @@ allprojects {
 **Step 2. Add the dependency**
 ```
 dependencies {
-	        compile 'com.github.CodyyAndroid:EmulatorDetect:v1.0.6'
+	        compile 'com.github.CodyyAndroid:EmulatorDetect:v1.0.7'
 	}
 ```
 ## Usage
@@ -100,4 +100,4 @@ public class MainActivity extends AppCompatActivity {
 }
 
 ```
-## [API DOC](https://jitpack.io/com/github/CodyyAndroid/EmulatorDetect/v1.0.6/javadoc/)
+## [API DOC](https://jitpack.io/com/github/CodyyAndroid/EmulatorDetect/v1.0.7/javadoc/)
