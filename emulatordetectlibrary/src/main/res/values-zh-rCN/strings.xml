@@ -1,0 +1,10 @@
+<resources>
+    <string name="emulator_name_yeshen">夜神模拟器</string>
+    <string name="emulator_name_haimawan">海马玩模拟器</string>
+    <string name="emulator_name_bluestacks">BlueStacks模拟器</string>
+    <string name="emulator_name_itools">iTools模拟器</string>
+    <string name="emulator_name_tiantian">天天模拟器</string>
+    <string name="emulator_name_xiaoyao">逍遥模拟器</string>
+    <string name="emulator_name_genymotion">Genymotion模拟器</string>
+    <string name="emulator_name_android">Android官方模拟器</string>
+</resources>

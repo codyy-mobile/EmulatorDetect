@@ -13,7 +13,6 @@ import android.hardware.SensorManager;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,6 +126,7 @@ public class EmulatorDetectorService extends Service implements SensorEventListe
             if (mOnece == 0) {
                 mOnece++;
                 isEmulator = mFloatsX.size() <= 1 || mFloatsY.size() <= 1 || mFloatsZ.size() <= 1 || isXLinearCorrelation() || isYLinearCorrelation() || isZLinearCorrelation();
+                mSensorManager.unregisterListener(this);
             }
         }
     }
@@ -136,7 +136,6 @@ public class EmulatorDetectorService extends Service implements SensorEventListe
 
     }
 
-    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return mIBinder;
@@ -169,19 +168,19 @@ public class EmulatorDetectorService extends Service implements SensorEventListe
         for (ApplicationInfo packageInfo : packages) {
             String packageName = packageInfo.packageName;
             if (packageName.startsWith("com.vphone.") || packageName.startsWith("com.bignox.")) {
-                sEmulatorName = "夜神模拟器";
+                sEmulatorName = context.getString(R.string.emulator_name_yeshen);
             } else if (packageName.startsWith("me.haima.")) {
-                sEmulatorName = "海马玩模拟器";
+                sEmulatorName = context.getString(R.string.emulator_name_haimawan);
             } else if (packageName.startsWith("com.bluestacks.")) {
-                sEmulatorName = "BlueStacks模拟器";
+                sEmulatorName = context.getString(R.string.emulator_name_bluestacks);
             } else if (packageName.startsWith("cn.itools.")) {
-                sEmulatorName = "iTools 模拟器";
+                sEmulatorName = context.getString(R.string.emulator_name_itools);
             } else if (packageName.startsWith("com.kop.") || packageName.startsWith("com.kaopu.")) {
-                sEmulatorName = "天天模拟器";
+                sEmulatorName = context.getString(R.string.emulator_name_tiantian);
             } else if (packageName.startsWith("com.microvirt.")) {
-                sEmulatorName = "逍遥模拟器";
+                sEmulatorName = context.getString(R.string.emulator_name_xiaoyao);
             } else if (packageName.equals("com.google.android.launcher.layouts.genymotion")) {
-                sEmulatorName = "Genymotion模拟器";
+                sEmulatorName = getString(R.string.emulator_name_genymotion);
             }
         }
         if (sEmulatorName == null) {
@@ -190,9 +189,12 @@ public class EmulatorDetectorService extends Service implements SensorEventListe
             for (ActivityManager.RunningServiceInfo serviceInfo : serviceInfos) {
                 String serviceName = serviceInfo.service.getClassName();
                 if (serviceName.startsWith("com.bluestacks.")) {
-                    sEmulatorName = "BlueStacks模拟器";
+                    sEmulatorName = context.getString(R.string.emulator_name_bluestacks);
                 }
             }
+        }
+        if (sEmulatorName == null && Build.PRODUCT.startsWith("sdk_google")) {
+            sEmulatorName = context.getString(R.string.emulator_name_android);
         }
         return sEmulatorName == null ? "" : sEmulatorName;
     }

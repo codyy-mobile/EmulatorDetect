@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">EmulatorDetectLibrary</string>
+    <string name="emulator_name_yeshen">YeShenEmulator</string>
+    <string name="emulator_name_haimawan">HaiMaWanEmulator</string>
+    <string name="emulator_name_bluestacks">BlueStacksEmulator</string>
+    <string name="emulator_name_itools">iToolsEmulator</string>
+    <string name="emulator_name_tiantian">TianTianEmulator</string>
+    <string name="emulator_name_xiaoyao">XiaoYaoEmulator</string>
+    <string name="emulator_name_genymotion">GenymotionEmulator</string>
+    <string name="emulator_name_android">AndroidEmulator</string>
 </resources>
