@@ -173,7 +173,7 @@ public class EmulatorDetectorService extends Service implements SensorEventListe
                 sEmulatorName = context.getString(R.string.emulator_name_haimawan);
             } else if (packageName.startsWith("com.bluestacks.")) {
                 sEmulatorName = context.getString(R.string.emulator_name_bluestacks);
-            } else if (packageName.startsWith("cn.itools.")) {
+            } else if (packageName.startsWith("cn.itools.")&&(Build.PRODUCT.startsWith("iToolsAVM")||Build.MANUFACTURER.startsWith("iToolsAVM")||Build.DEVICE.startsWith("iToolsAVM")||Build.MODEL.startsWith("iToolsAVM")||Build.BRAND.startsWith("generic")||Build.HARDWARE.startsWith("vbox86"))) {
                 sEmulatorName = context.getString(R.string.emulator_name_itools);
             } else if (packageName.startsWith("com.kop.") || packageName.startsWith("com.kaopu.")) {
                 sEmulatorName = context.getString(R.string.emulator_name_tiantian);
