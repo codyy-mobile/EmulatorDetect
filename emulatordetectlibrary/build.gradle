@@ -3,14 +3,14 @@ apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'com.github.codyyeachann'
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.3"
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 25
-        versionCode 8
-        versionName "1.0.8"
+        targetSdkVersion 26
+        versionCode 9
+        versionName "1.0.9"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -57,7 +57,7 @@ javadoc {
         author true
         version true
         links "http://docs.oracle.com/javase/7/docs/api"
-        title "EmulatorDetector1.0.8"
+        title "EmulatorDetector1.0.9"
     }
 }
 // 制作文档(Javadoc)
