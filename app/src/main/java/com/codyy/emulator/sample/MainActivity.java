@@ -28,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        place = (TextView) findViewById(R.id.tv_placeholder);
-        textView = (TextView) findViewById(R.id.tv_info);
+        place =  findViewById(R.id.tv_placeholder);
+        textView =  findViewById(R.id.tv_info);
         textView.postDelayed(new Runnable() {
             @Override
             public void run() {
