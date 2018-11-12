@@ -17,7 +17,7 @@ allprojects {
 **Step 2. Add the dependency**
 ```
 dependencies {
-	        compile 'com.github.CodyyAndroid:EmulatorDetect:1.0.8'
+	        compile 'com.github.CodyyAndroid:EmulatorDetect:1.1.0'
 	}
 ```
 ## Usage
